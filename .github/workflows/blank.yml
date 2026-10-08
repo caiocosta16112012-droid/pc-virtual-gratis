@@ -1,0 +1,25 @@
+name: PC Virtual
+
+on:
+  workflow_dispatch:
+
+jobs:
+  pc-virtual:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Instalar ambiente
+        run: |
+          sudo apt update
+          sudo apt install -y xfce4 xfce4-goodies xrdp
+
+      - name: Iniciar PC virtual
+        run: |
+          sudo systemctl enable xrdp
+          sudo systemctl start xrdp
+          echo "PC virtual iniciado"
+          hostname -I
+
+      - name: Manter ligado
+        run: |
+          sleep 21600
