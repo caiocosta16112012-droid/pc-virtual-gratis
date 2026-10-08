@@ -6,29 +6,36 @@ on:
 jobs:
   pc-virtual:
     runs-on: ubuntu-24.04
-    timeout-minutes: 360
+    timeout-minutes: 350
 
     steps:
-      - name: Instalar ambiente
+      - name: Instalar PC
         run: |
           sudo apt update
           sudo apt install -y xrdp xfce4 xfce4-goodies
 
-      - name: Configurar XRDP
-        run: |
           sudo systemctl enable xrdp
           sudo systemctl start xrdp
 
           sudo useradd -m -s /bin/bash usuario
           echo 'usuario:Senha123!' | sudo chpasswd
 
-          echo "startxfce4" > /home/usuario/.xsession
+          echo 'startxfce4' > /home/usuario/.xsession
           sudo chown usuario:usuario /home/usuario/.xsession
 
-          echo "XRDP iniciado"
+      - name: Conectar Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
+
+      - name: Mostrar endereço do PC
+        run: |
+          echo "IP DO PC:"
+          tailscale ip -4
+
+          echo "XRDP:"
           sudo systemctl status xrdp --no-pager
 
       - name: Manter ligado
         run: |
-          echo "PC virtual funcionando"
-          sleep 21600
+          sleep 21000
