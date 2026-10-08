@@ -9,32 +9,26 @@ jobs:
     timeout-minutes: 360
 
     steps:
-      - name: Instalar XRDP
+      - name: Instalar ambiente
         run: |
           sudo apt update
           sudo apt install -y xrdp xfce4 xfce4-goodies
 
+      - name: Configurar XRDP
+        run: |
           sudo systemctl enable xrdp
           sudo systemctl start xrdp
 
-          sudo adduser --disabled-password --gecos "" usuario
+          sudo useradd -m -s /bin/bash usuario
           echo 'usuario:Senha123!' | sudo chpasswd
-          sudo usermod -aG ssl-cert usuario
 
-          echo "startxfce4" | sudo tee /home/usuario/.xsession
+          echo "startxfce4" > /home/usuario/.xsession
           sudo chown usuario:usuario /home/usuario/.xsession
 
-      - name: Instalar Cloudflared
-        run: |
-          wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
-          sudo dpkg -i cloudflared-linux-amd64.deb
-
-      - name: Criar túnel RDP
-        run: |
-          cloudflared tunnel --url tcp://localhost:3389 2>&1 | tee tunnel.log &
-          sleep 10
-          cat tunnel.log
+          echo "XRDP iniciado"
+          sudo systemctl status xrdp --no-pager
 
       - name: Manter ligado
         run: |
+          echo "PC virtual funcionando"
           sleep 21600
