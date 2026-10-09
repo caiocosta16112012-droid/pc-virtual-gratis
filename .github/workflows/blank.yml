@@ -1,7 +1,11 @@
+
 name: PC Virtual
 
 on:
   workflow_dispatch:
+
+permissions:
+  contents: read
 
 jobs:
   pc-virtual:
@@ -9,34 +13,33 @@ jobs:
     timeout-minutes: 350
 
     steps:
-      - name: Instalar PC
+      - name: Instalar ambiente gráfico
         run: |
-          sudo apt update
-          sudo apt install -y xrdp xfce4
-
-          sudo systemctl enable xrdp
-          sudo systemctl start xrdp
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y xfce4 xrdp xorgxrdp dbus-x11
 
           sudo useradd -m -s /bin/bash usuario
           echo 'usuario:Senha123!' | sudo chpasswd
 
-          sudo sh -c "echo 'startxfce4' > /home/usuario/.xsession"
-sudo chown usuario:usuario /home/usuario/.xsession
-sudo chmod 644 /home/usuario/.xsession
+          echo 'startxfce4' | sudo tee /home/usuario/.xsession
+          sudo chown usuario:usuario /home/usuario/.xsession
+          sudo chmod 644 /home/usuario/.xsession
+
+          sudo adduser xrdp ssl-cert
+          sudo systemctl enable xrdp
+          sudo systemctl restart xrdp
 
       - name: Conectar Tailscale
         uses: tailscale/github-action@v4
         with:
           authkey: ${{ secrets.TAILSCALE_AUTHKEY }}
 
-      - name: Mostrar endereço do PC
+      - name: Mostrar IP do PC
         run: |
           echo "IP DO PC:"
           tailscale ip -4
+          echo "Porta de acesso: 3389"
 
-          echo "XRDP:"
-          sudo systemctl status xrdp --no-pager
-
-      - name: Manter ligado
-        run: |
-          sleep 21000
+      - name: Manter PC ligado
+        run: sleep 21000
+        
