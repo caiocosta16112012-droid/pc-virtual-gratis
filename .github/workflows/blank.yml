@@ -20,8 +20,9 @@ jobs:
           sudo useradd -m -s /bin/bash usuario
           echo 'usuario:Senha123!' | sudo chpasswd
 
-          echo 'startxfce4' > /home/usuario/.xsession
-          sudo chown usuario:usuario /home/usuario/.xsession
+          sudo sh -c "echo 'startxfce4' > /home/usuario/.xsession"
+sudo chown usuario:usuario /home/usuario/.xsession
+sudo chmod 644 /home/usuario/.xsession
 
       - name: Conectar Tailscale
         uses: tailscale/github-action@v4
