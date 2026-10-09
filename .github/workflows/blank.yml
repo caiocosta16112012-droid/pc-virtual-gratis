@@ -29,6 +29,8 @@ jobs:
           sudo adduser xrdp ssl-cert
           sudo systemctl enable xrdp
           sudo systemctl restart xrdp
+          sudo systemctl status xrdp --no-pager
+          sudo ss -ltnp | grep 3389
 
       - name: Conectar Tailscale
         uses: tailscale/github-action@v4
