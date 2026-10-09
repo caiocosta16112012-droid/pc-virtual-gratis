@@ -21,12 +21,10 @@ jobs:
           sudo useradd -m -s /bin/bash usuario
           echo 'usuario:Senha123!' | sudo chpasswd
 
-          echo '#!/bin/sh' | sudo tee /home/usuario/.xsession
-echo 'unset DBUS_SESSION_BUS_ADDRESS' | sudo tee -a /home/usuario/.xsession
-echo 'unset SESSION_MANAGER' | sudo tee -a /home/usuario/.xsession
-echo 'exec startxfce4' | sudo tee -a /home/usuario/.xsession
-sudo chown usuario:usuario /home/usuario/.xsession
-sudo chmod 755 /home/usuario/.xsession
+          sudo mkdir -p /home/usuario
+          printf '#!/bin/sh\nunset DBUS_SESSION_BUS_ADDRESS\nunset SESSION_MANAGER\nexec dbus-launch --exit-with-session startxfce4\n' | sudo tee /home/usuario/.xsession
+          sudo chown usuario:usuario /home/usuario/.xsession
+          sudo chmod 755 /home/usuario/.xsession
 
           sudo adduser xrdp ssl-cert
           sudo systemctl enable xrdp
